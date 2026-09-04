@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación de Boda - Mario & Jacqueline</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================
+       VARIABLES Y ESTILOS BASE
+       ========================== */
+    :root {
+      --color-dark-brown: #3a2218;
+      --color-accent-brown: #5a3828;
+      --color-envelope-inside: #22120b;
+      --color-cream-bg: #f8f4ee;
+      --color-gold: #d4af37;
+      --color-text-dark: #2c2523;
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-script: 'Great Vibes', cursive;
+      --font-sans: 'Montserrat', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121212;
+      font-family: var(--font-sans);
+      color: var(--color-text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==============================================
+       IMAGEN DE FONDO GLOBAL SIN ZOOM DEFORME
+       ============================================== */
+    .mobile-container {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      background-color: var(--color-cream-bg);
+      background-image: url('Images/Textura.jpg');
+      background-size: 100% auto; /* MANTIENE ESCALA NATURAL SIN ZOOM */
+      background-repeat: repeat-y;
+      background-position: center top;
+      position: relative;
+      overflow-x: hidden;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+    }
+
+    /* ==============================================
+       1. PANTALLA INICIAL (ELEMENTOS CERCANOS AL SOBRE)
+       ============================================== */
+    #initial-screen {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      background-color: var(--color-dark-brown);
+      color: #ffffff;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #initial-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .cover-header-group {
+      margin-bottom: 5px;
+    }
+
+    .cover-top-text {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #e3d2c3;
+      margin-bottom: 6px;
+    }
+
+    .cover-couple-names {
+      font-family: var(--font-script);
+      font-size: 3.4rem;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* ESTRUCTURA DEL SOBRE CERRADO EN 3D */
+    .envelope-box {
+      perspective: 1000px;
+      width: 300px;
+      height: 200px;
+      margin: 0;
+      position: relative;
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      background-color: var(--color-envelope-inside);
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 115px solid #4a2c1f;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+      transform-origin: top center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 4;
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .envelope-pocket::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid #331d14;
+      border-right: 150px solid #331d14;
+      border-bottom: 115px solid #3d2318;
+    }
+
+    .envelope-letter {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      width: 270px;
+      height: 175px;
+      background: #fdfbf7;
+      border-radius: 6px;
+      padding: 15px 12px;
+      color: var(--color-text-dark);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 2;
+      transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.3s, z-index 0s linear 0.4s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #ebdccb;
+    }
+
+    .letter-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-dark-brown);
+      letter-spacing: 1px;
+    }
+
+    .letter-date {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--color-accent-brown);
+      margin-bottom: 10px;
+    }
+
+    .letter-guest-label {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    .letter-guest-name {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--color-dark-brown);
+      margin-bottom: 8px;
+    }
+
+    .letter-passes {
+      font-size: 0.7rem;
+      background-color: var(--color-cream-bg);
+      border: 1px dashed var(--color-accent-brown);
+      padding: 4px 10px;
+      border-radius: 12px;
+      color: var(--color-dark-brown);
+      font-weight: 500;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 62px;
+      height: 62px;
+      z-index: 5;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, #e0b84c 0%, #a27b22 70%, #684f12 100%);
+      border-radius: 50%;
+      padding: 5px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4);
+    }
+
+    .wax-seal img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    #initial-screen.open .wax-seal {
+      opacity: 0;
+      transform: translateX(-50%) scale(1.4);
+      pointer-events: none;
+    }
+
+    #initial-screen.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    #initial-screen.open .envelope-letter {
+      z-index: 5;
+      transform: translateY(-95px) scale(1.03);
+    }
+
+    .cover-click-prompt {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #e3d2c3;
+      letter-spacing: 0.5px;
+      animation: pulseText 2s infinite;
+      min-height: 1.5em;
+    }
+
+    @keyframes pulseText {
+      0% { opacity: 0.6; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0.6; transform: scale(0.98); }
+    }
+
+    /* ==============================================
+       2. BOTÓN DE MÚSICA FLOTANTE
+       ============================================== */
+    .music-control-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 45px;
+      height: 45px;
+      background-color: var(--color-dark-brown);
+      color: #ffffff;
+      border: 2px solid #e3d2c3;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 900;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, opacity 0.5s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .music-control-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .music-control-btn.playing {
+      animation: spinMusic 4s linear infinite;
+    }
+
+    @keyframes spinMusic {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ==============================================
+       3. INVITACIÓN PRINCIPAL
+       ============================================== */
+    .invitation-content {
+      padding: 25px 20px 40px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .photo-frame {
+      width: 100%;
+      max-height: 380px;
+      background-color: transparent;
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+    }
+
+    .quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--color-dark-brown);
+      margin: 15px 10px 25px 10px;
+      line-height: 1.4;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .main-names {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      letter-spacing: 3px;
+      color: var(--color-dark-brown);
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-top: 45px;
+    }
+
+    .main-names span {
+      display: block;
+      font-family: var(--font-script);
+      font-size: 2.4rem;
+      text-transform: none;
+      margin: 5px 0;
+    }
+
+    .intro-text {
+      font-size: 0.9rem;
+      color: #444;
+      margin: 20px 15px;
+      line-height: 1.5;
+    }
+
+    .event-date-title {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--color-dark-brown);
+      margin-top: 25px;
+    }
+
+    .event-location-title {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 45px;
+    }
+
+    .badge-pill {
+      background-color: var(--color-dark-brown);
+      color: #ffffff;
+      padding: 8px 24px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      display: inline-block;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .event-card {
+      margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 18px 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(3px);
+    }
+
+    /* ==============================================
+       ESTILOS PARA IMÁGENES TIPO BOCETO PNG SIN FONDO
+       ============================================== */
+    .event-illustration {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      max-height: 220px;
+      margin: 0 auto 12px auto;
+      border: none;
+      background: transparent !important;
+      box-shadow: none !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .event-illustration img,
+    .dress-code-img,
+    .gift-envelope-img {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+      object-fit: contain;
+      display: block;
+      filter: none !important;
+      mix-blend-mode: multiply;
+      background-color: transparent !important;
+    }
+
+    .place-name {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-dark-brown);
+      margin-bottom: 4px;
+    }
+
+    .place-address {
+      font-size: 0.85rem;
+      color: #444;
+      margin-bottom: 15px;
+      padding: 0 15px;
+      line-height: 1.3;
+    }
+
+    .map-frame {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .section-divider {
+      border: 0;
+      height: 1px;
+      background: rgba(90, 56, 40, 0.25);
+      margin: 30px 0;
+    }
+
+    .dress-code-img {
+      width: 130px;
+      height: auto;
+      margin: 10px auto 15px auto;
+      display: block;
+    }
+
+    .dress-code-details {
+      text-align: left;
+      background: rgba(255,255,255,0.6);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .dress-code-details p {
+      margin-bottom: 8px;
+    }
+
+    .dress-code-details ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    .rsvp-box {
+      background-color: rgba(255, 255, 255, 0.4);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .rsvp-button {
+      display: block;
+      width: 100%;
+      padding: 12px 0;
+      background-color: var(--color-dark-brown);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .gifts-section {
+      margin: 30px 0;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 20px 15px;
+      border-radius: 12px;
+    }
+
+    .gifts-title {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: var(--color-dark-brown);
+      margin-bottom: 15px;
+    }
+
+    .gift-envelope-img {
+      width: 130px;
+      height: auto;
+      margin: 0 auto 10px auto;
+      display: block;
+    }
+
+    .gift-text {
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .countdown-section {
+      background-color: transparent;
+      padding: 20px 15px;
+      border-radius: 12px;
+      margin-top: 30px;
+    }
+
+    .countdown-photo {
+      width: 100%;
+      height: auto;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 15px;
+      display: block;
+      background-color: transparent;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+    }
+
+    .timer-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 15px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 12px 8px;
+      border-radius: 8px;
+    }
+
+    .timer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .timer-number {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-dark-brown);
+    }
+
+    .timer-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+    }
+
+    .footer-monogram {
+      margin-top: 40px;
+      margin-bottom: 10px;
+    }
+
+    .footer-monogram img {
+      width: 75px;
+      height: auto;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ELEMENTO DE AUDIO DE LA BODA -->
+  <audio id="wedding-audio" loop preload="auto">
+    <source src="Music/The 100 Girlfriends Who Really REALLY Love You - Opening  Dai Dai Dai Dai Daisuki na Kimi e.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- BOTÓN FLOTANTE MÚSICA -->
+  <button id="music-btn" class="music-control-btn" onclick="toggleAudio()" aria-label="Controlar música">
+    🎵
+  </button>
+
+  <div class="mobile-container">
+
+    <!-- 1. PANTALLA INICIAL -->
+    <div id="initial-screen" onclick="handleCoverClick()">
+      <div class="cover-header-group">
+        <h1 class="cover-couple-names">Mario & Jacqueline</h1>
+        <h2>14.11.2026</h2>
+      </div>
+
+      <div class="envelope-box">
+        <div class="envelope">
+          <div class="envelope-flap"></div>
+          <div class="envelope-pocket"></div>
+          
+          <div class="envelope-letter">
+            <p class="letter-guest-label">Con cariño, para:</p>
+            <p class="letter-guest-name">Familia Guinea Hernández </p>
+            <p class="letter-passes">Hemos reservado 4 lugares en su honor</p>
+          </div>
+
+          <div class="wax-seal">
+            <img src="Images/iniciales.png" alt="Monograma de Boda">
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-click-prompt" id="cover-prompt">
+        Haz clic para abrir el mensaje
+      </div>
+    </div>
+
+    <!-- 2. INVITACIÓN PRINCIPAL -->
+    <div class="invitation-content">
+
+      <div class="photo-frame">
+        <img src="Images/principal.jpeg" alt="Foto Mario & Jacqueline">
+      </div>
+
+      <p class="quote">
+        “Hemos decidido hacer de nuestro amor un hogar y de nuestra historia, un para siempre”
+      </p>
+
+      <h2 class="main-names">
+        Mario
+        <span>&</span>
+        Jacqueline
+      </h2>
+
+      <p class="intro-text">
+        Con mucha alegría queremos compartir uno de los días más importantes de nuestras vidas...
+      </p>
+
+      <p class="event-date-title">SÁBADO 14 DE NOVIEMBRE, 2026</p>
+      <p class="event-location-title">San Salvador, El Salvador</p>
+
+      <!-- CEREMONIA -->
+      <div class="event-card">
+        <div class="badge-pill">CEREMONIA 4:00 PM</div>
+        <div class="event-illustration">
+          <img src="Images/Iglesia tipo boceto.png" alt="Parroquia Corazón de María">
+        </div>
+        <p class="place-name">Parroquia Corazón de María</p>
+        <p class="place-address">75 Avenida Sur y Calle Maquilishuat, #200, San Salvador.</p>
+        
+        <iframe 
+          class="map-frame" 
+          src="https://maps.google.com/maps?q=Parroquia+Corazon+de+Maria+San+Salvador&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+      </div>
+
+      <!-- RECEPCIÓN -->
+      <div class="event-card">
+        <div class="badge-pill">RECEPCIÓN 6:00 PM</div>
+        <div class="event-illustration">
+          <img src="Images/Boceto Quinta Mirasol.png" alt="Quinta Mirasol">
+        </div>
+        <p class="place-name">Quinta Mirasol</p>
+        <p class="place-address">Calle Antigua a Huizúcar, Colonia Dolores, frente a Tanques Holanda, San Salvador.</p>
+        
+        <iframe 
+          class="map-frame" 
+          src="https://maps.google.com/maps?q=Quinta+Mirasol+San+Salvador&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+      </div>
+
+
+      <!-- VESTIMENTA -->
+      <div class="event-card">
+        <div class="badge-pill">VESTIMENTA FORMAL</div>
+        <img src="Images/Vestimenta.png" alt="Ilustración Vestimenta Formal" class="dress-code-img">
+        
+        <div class="dress-code-details">
+          <p><strong>Hombres:</strong> Traje formal. <br><small>Uso de corbatín exclusivo para el novio.</small></p>
+          <p><strong>Mujeres:</strong> Vestido largo.</p>
+          <ul>
+            <li>Blanco y tonos similares reservados exclusivamente para la novia.</li>
+            <li>Color chocolate reservado para las damas de honor.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CONFIRMACIÓN -->
+      <div>
+        <div class="badge-pill">CONFIRMA TU ASISTENCIA</div>
+        <div class="rsvp-box">
+          <a href="https://wa.me/50300000000?text=Hola,%20confirmo%20mi%20asistencia%20para%20la%20boda" target="_blank" class="rsvp-button">
+            CONFIRMAR POR WHATSAPP
+          </a>
+        </div>
+      </div>
+
+      <!-- REGALOS -->
+      <div class="gifts-section">
+        <h3 class="gifts-title">REGALOS</h3>
+        <img src="Images/Sobre color chocolate.png" alt="Regalo de Sobres" class="gift-envelope-img">
+        <p class="gift-text">Agradecemos sus muestras de cariño en regalo de sobres.</p>
+      </div>
+
+      <!-- CONTADOR -->
+      <div class="countdown-section">
+        <p style="font-size: 0.85rem; font-weight: 600; color: var(--color-dark-brown);">¡TIEMPO RESTANTE PARA EL GRAN DÍA!</p>
+        
+        <div class="timer-container" id="countdown-timer">
+          <div class="timer-block">
+            <span class="timer-number" id="days">00</span>
+            <span class="timer-label">Días</span>
+          </div>
+          <div class="timer-block">
+            <span class="timer-number" id="hours">00</span>
+            <span class="timer-label">Hs</span>
+          </div>
+          <div class="timer-block">
+            <span class="timer-number" id="minutes">00</span>
+            <span class="timer-label">Min</span>
+          </div>
+          <div class="timer-block">
+            <span class="timer-number" id="seconds">00</span>
+            <span class="timer-label">Seg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer-monogram">
+        <img src="Images/iniciales.png" alt="Monograma J&M">
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const audio = document.getElementById('wedding-audio');
+    const musicBtn = document.getElementById('music-btn');
+    const initialScreen = document.getElementById('initial-screen');
+    const coverPrompt = document.getElementById('cover-prompt');
+    
+    let step = 0;
+
+    function handleCoverClick() {
+      if (step === 0) {
+        step = 1;
+        initialScreen.classList.add('open');
+        playAudio();
+
+        coverPrompt.style.opacity = 0;
+        setTimeout(() => {
+          coverPrompt.innerText = "Haz clic de nuevo para ver la invitación completa";
+          coverPrompt.style.opacity = 1;
+        }, 300);
+
+      } else if (step === 1) {
+        step = 2;
+        initialScreen.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function playAudio() {
+      if (audio) {
+        audio.play().then(() => {
+          musicBtn.classList.add('visible', 'playing');
+          musicBtn.innerHTML = '🎵';
+        }).catch(err => {
+          console.log("Reproducción automática no permitida: ", err);
+          musicBtn.classList.add('visible');
+          musicBtn.innerHTML = '🔇';
+        });
+      }
+    }
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        musicBtn.classList.add('playing');
+        musicBtn.innerHTML = '🎵';
+      } else {
+        audio.pause();
+        musicBtn.classList.remove('playing');
+        musicBtn.innerHTML = '🔇';
+      }
+    }
+
+    const targetDate = new Date('November 14, 2026 16:00:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+        document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+        document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+      } else {
+        document.getElementById('countdown-timer').innerHTML = "<p>¡Hoy es el gran día!</p>";
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
