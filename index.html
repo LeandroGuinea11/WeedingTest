@@ -302,9 +302,14 @@
       text-align: center;
     }
 
+    /* OPTIMIZACIÓN DE VIDEO FRAME POR CSS */
     .photo-frame video {
       width: 100%;
       border-radius: 8px;
+      pointer-events: none; /* Previene pausas accidentales por toque táctil */
+      transform: translateZ(0); /* Fuerza aceleración de Hardware por GPU */
+      will-change: transform;
+      background-color: #000;
     }
 
     .quote {
@@ -456,7 +461,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.75); /* Sin backdrop-filter para alto rendimiento */
+      background-color: rgba(0, 0, 0, 0.75);
       z-index: 2000;
       display: flex;
       justify-content: center;
@@ -556,7 +561,6 @@
       font-weight: 500;
     }
 
-    /* Sin animaciones de altura para prevenir Reflow/Lag */
     .modal-select-group {
       text-align: left;
       margin-bottom: 20px;
@@ -650,7 +654,8 @@
     <!-- INVITACIÓN PRINCIPAL -->
     <div class="invitation-content">
       <div class="photo-frame">
-        <video autoplay muted loop playsinline>
+        <!-- VIDEO OPTIMIZADO CON ATRIBUTOS DE ALTO RENDIMIENTO -->
+        <video id="wedding-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablePictureInPicture disableRemotePlayback>
           <source src="Video/Test2.mp4" type="video/mp4">
         </video>
       </div>
@@ -771,7 +776,7 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylrzZqR0DB1xqQXHVBHBUuKJpJxdgtl7lRrBcRcXwYRYFX7Dv_wRvJoWlABE_qPRNkbw/exec"; 
 
     // ==========================================
-    // DICCIONARIO BASE DE DATOS DE INVITADOS
+    // BASE DE DATOS DE INVITADOS
     // ==========================================
     const invitados = {
       "1": { name: "Familia Guinea Hernandez", pases: 4 },
@@ -817,17 +822,16 @@
     let currentGuestId = "1";
     let currentGuest = invitados["1"];
 
-    // Cacheado de referencias DOM
     let rsvpModal, modalGuestDisplay, passesSelect, passesContainer;
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Inicializar referencias
       rsvpModal = document.getElementById('rsvp-modal');
       modalGuestDisplay = document.getElementById('modal-guest-display');
       passesSelect = document.getElementById('attending-passes-select');
       passesContainer = document.getElementById('passes-select-container');
 
       cargarDatosInvitado();
+      initVideoOptimization();
     });
 
     function cargarDatosInvitado() {
@@ -846,12 +850,65 @@
     }
 
     // ==========================================
-    // LÓGICA OPTIMIZADA DEL MODAL RSVP
+    // OPTIMIZACIÓN Y CONTROL DEL VIDEO
+    // ==========================================
+    function initVideoOptimization() {
+      const video = document.getElementById('wedding-video');
+      if (!video) return;
+
+      // Forzar que esté silenciado para garantizar autoplay
+      video.muted = true;
+
+      // Función para intentar reproducir de forma segura
+      const safePlay = () => {
+        if (video.paused) {
+          const promise = video.play();
+          if (promise !== undefined) {
+            promise.catch(() => {
+              // Si el navegador lo frena, reintentamos al primer toque de pantalla
+              const enableVideoTouch = () => {
+                video.play();
+                document.removeEventListener('touchstart', enableVideoTouch);
+                document.removeEventListener('click', enableVideoTouch);
+              };
+              document.addEventListener('touchstart', enableVideoTouch, { passive: true });
+              document.addEventListener('click', enableVideoTouch, { passive: true });
+            });
+          }
+        }
+      };
+
+      safePlay();
+
+      // Recuperación en caso de que el navegador lo pause por ahorro de batería
+      video.addEventListener('pause', () => {
+        if (document.visibilityState === 'visible') {
+          setTimeout(safePlay, 200);
+        }
+      });
+
+      // Interceptor inteligente: Reproduce solo cuando el video está en la pantalla del usuario
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              safePlay();
+            } else {
+              video.pause(); // Ahorra GPU y batería cuando el usuario se desplaza
+            }
+          });
+        }, { threshold: 0.15 });
+
+        observer.observe(video);
+      }
+    }
+
+    // ==========================================
+    // LÓGICA MODAL RSVP
     // ==========================================
     function openRsvpModal() {
       modalGuestDisplay.innerText = currentGuest.name;
 
-      // Inserción ultra rápida mediante DocumentFragment
       const fragment = document.createDocumentFragment();
       for (let i = 1; i <= currentGuest.pases; i++) {
         const option = document.createElement('option');
@@ -893,7 +950,6 @@
       const isAttending = statusInput ? statusInput.value === 'si' : true;
       const selectedPasses = isAttending ? parseInt(passesSelect.value) : 0;
 
-      // 1. REGISTRO EN GOOGLE SHEETS
       const rsvpData = {
         id: currentGuestId,
         name: currentGuest.name,
@@ -912,7 +968,6 @@
         }).catch(err => console.error("Error Sheets:", err));
       }
 
-      // 2. WHATSAPP REDIRECTION
       let message = "";
       if (isAttending) {
         message = `¡Hola! Confirmo con mucha alegría nuestra asistencia a la boda de Mario & Jacqueline.\n\n` +
